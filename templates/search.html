@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+
+</br>
+<div class="d-flex flex-row align-items-center">
+    <h5>You searched for: <em>
+        {{searched}}
+    </em> </h2>
+
+<br />
+
+</div>
+
+{%if users or posts%}
+
+{%for user in users %}
+
+<div class="shadow-lg p-3 col-8 bg-body rounded">
+    <div class="d-flex flex-row justify-content-between align-items-center mt-3 mb-3">
+        <div class="d-flex flex-row align-items-center">
+            <div
+                class="rounded-circle overflow-hidden d-flex justify-content-center align-items-center border sugest-profile-photo">
+                {%if user.profile_pic%}
+                <img src="{{url_for('static',filename='images/'+user.profile_pic)}}" alt=""
+                    style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+                {%else%}
+                <img src="{{url_for('static',filename='images/profile.jpg')}}" alt=""
+                    style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+                {%endif%}
+            </div>
+            <strong class="ml-3 sugest-username">
+                <a href="{{ url_for('user', username=user.username)}}">{{user.username}}</a>
+            </strong>
+
+
+
+        </div>
+        <p>{{ user.followers.count() }} followers </p> 
+        <p>{{ user.followed.count() }} following</p>
+
+
+        {% if current_user.is_authenticated %}
+            {% if user == current_user %}
+                <p><a href="{{ url_for('dashboard') }}">Edit your profile</a></p>
+                {% elif not current_user.is_following(user) %}
+                <p>
+                <form action="{{ url_for('follow', username=user.username) }}" method="post">
+                    {{ form.hidden_tag() }}
+                    {{ form.submit(value='Follow') }}
+                </form>
+                </p>
+            {% else %}
+                <p>
+                <form action="{{ url_for('unfollow', username=user.username) }}" method="post">
+                    {{ form.hidden_tag() }}
+                    {{ form.submit(value='Unfollow') }}
+                </form>
+                </p>
+            {% endif %}
+            
+            {%else%}
+            <a href='{{url_for("login")}}' class="btn btn-primary btn-sm p-0 btn-ig ">Login</a>
+        {% endif %}
+    </div>
+
+
+    {%endfor%}
+
+
+
+    {%for post in posts %}
+
+    <div class="shadow-lg p-3  bg-body rounded">
+        <h2> <a href="{{url_for('post',id=post.id)}}">{{post.title}}</a> </h2>
+        By: 
+       
+            <a href="{{ url_for('user', username=post.poster.username)}}">{{post.poster.username}}</a>
+   
+    <br />
+
+        {{post.date_posted}} <br /> <br />
+        {{post.content|safe}} <br />
+        <br />
+
+
+        <a class="btn btn-outline-secondary btn-sm" href="{{url_for('post',id=post.id)}}">View Post</a>
+
+
+        <br />
+    </div>
+
+    {%endfor%}
+
+
+
+    {%else%}
+    Sorry , your Search term: <strong>
+        {{searched}}
+    </strong> was not found...
+
+
+    {%endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {%endblock%}
