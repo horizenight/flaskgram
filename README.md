@@ -75,5 +75,4 @@ The project architecture could be divided into
 
 
 
-### Video
-<https://drive.google.com/drive/folders/1CfNK3qzkHpdFWBgI8ct3AqXIebDG8gl6?usp=sharing>
+
