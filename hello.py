@@ -499,7 +499,7 @@ def test_pw():
 def user(username):
     user = Users.query.filter_by(username=username).first()
     posts = Posts.query.filter_by(poster_id = user.id)
-    
+    posts= posts.order_by(Posts.date_posted.desc())
     return render_template('user.html',posts=posts ,user=user, username = username)
 
 
@@ -646,16 +646,16 @@ followers = db.Table('followers',
 
 
 
-# #Create Comment 
-# class Comment(db.Model):
-#     id = db.Column(db.Model);
-#     text = db.Column(db.String(140))
-#     author = db.Column(db.String(32))
-#     date_posted=db.Column(db.DateTime() ,default =datetime.utcnow,index=True)
-#     parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
-#     replies = db.relationship(
-#         'Comment', backref=db.backref('parent', remote_side=[id]),
-#         lazy='dynamic')
+#Create Comment 
+class Comment(db.Model):
+    id = db.Column(db.Model);
+    text = db.Column(db.String(140))
+    author = db.Column(db.String(32))
+    date_posted=db.Column(db.DateTime() ,default =datetime.utcnow,index=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    replies = db.relationship(
+        'Comment', backref=db.backref('parent', remote_side=[id]),
+        lazy='dynamic')
 
 
 
@@ -771,4 +771,3 @@ def archive_action(post_id, action):
         post.unarchive_post(post)
         db.session.commit()
     return redirect(request.referrer)
-

@@ -103,12 +103,14 @@
                                     <!-- this should only work if current user == post.poster.id -->
 
                                     {%if current_user.id == post.poster.id%}
-                                  
+                                    
                                     <div>
                                         {{post.archived_int}}
+                                        
+                                        
                                         {% if post.has_archived_post(post) %}
                                        
-                                       
+                                      
                                         <a
                                             href="{{ url_for('archive_action', post_id=post.id, action='unarchive') }}">
                                             <button class="btn p-0">
@@ -138,15 +140,13 @@
                                                         d="M4.094 4a.5.5 0 0 0-.44.26l-2.47 4.532A1.5 1.5 0 0 0 1 9.51v.99H0v-.99c0-.418.105-.83.305-1.197l2.472-4.531A1.5 1.5 0 0 1 4.094 3h7.812a1.5 1.5 0 0 1 1.317.782l2.472 4.53c.2.368.305.78.305 1.198v.99h-1v-.99a1.5 1.5 0 0 0-.183-.718L12.345 4.26a.5.5 0 0 0-.439-.26H4.094z" />
                                                 </svg>
                                             </button></a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                {%else%}
-                                <div>
-                                   
-                                   
+                                            {% endif %}
+                                        </div>
                                 </div>
                             </div>
+                                {%else%}
+                         
+                        
 
                                 {%endif%}
 
@@ -178,9 +178,15 @@
                         </div>
 
                         {%else%}
+
+                       
+
                         {%endif%}
 
+
+
                         {%endfor%}
+
 
                         {%else %}
 
@@ -197,17 +203,10 @@
                         {%endif%}
 
 
-
-
-
-
-
-
-
                     </div>
                 </div>
             </div>
-            {%include "suggested.html" %}
+            {%include "suggested.html" %}       
         </div>
     </div>
 </div>
