@@ -154,7 +154,8 @@ def dashboard():
 @app.route('/posts/<int:id>')
 def post(id):
     post = Posts.query.get_or_404(id)
-    return render_template('post.html',post=post)
+    our_users = Users.query.order_by(Users.date_added)
+    return render_template('post.html',post=post,our_users=our_users)
 
 
 @app.route('/post/edit/<int:id>',methods=['GET','POST'])
@@ -193,8 +194,10 @@ def edit_post(id):
 @app.route('/posts')
 def posts():
     #Grab all the posts from the database 
-    posts = Posts.query.order_by(Posts.date_posted) 
-    return render_template("posts.html",posts=posts)
+    posts = Posts.query.order_by(Posts.date_posted.desc())
+    our_users = Users.query.order_by(Users.date_added.desc())[0:3]   
+
+    return render_template("posts.html",posts=posts,our_users=our_users)
 
 
 #delete post
@@ -411,6 +414,8 @@ def search():
     if form.validate_on_submit():
         user.searched = form.searched.data
         post.searched = form.searched.data
+
+        
         
         #QUERY THE Database
         users = users.filter(Users.username.like('%'+user.searched+'%'))
@@ -423,7 +428,9 @@ def search():
 
         # return render_template("search.html",form = form, searched = post.searched,posts=posts)
         return render_template("search.html" , form = form , searched = user.searched , users = users,posts=posts)
-  
+    else:
+        flash('Try Again')
+        return render_template('search.html')
     
 
 
@@ -491,8 +498,9 @@ def test_pw():
 @app.route('/user/<username>')
 def user(username):
     user = Users.query.filter_by(username=username).first()
+    posts = Posts.query.filter_by(poster_id = user.id)
     
-    return render_template('user.html' ,user=user, username = username)
+    return render_template('user.html',posts=posts ,user=user, username = username)
 
 
 
@@ -544,8 +552,39 @@ def unfollow(username):
 def feed(username):
     user = Users.query.filter_by(username=username).first()
     # we have grabed user 
-    posts = user.followed_posts()
-    return render_template("posts.html",posts=posts)
+    posts = user.followed_posts().filter()
+    our_users = user.followed.filter()[0:3]
+    users = Users.query.filter()[0:5]
+
+    # posts = Posts.query.order_by(Posts.date_posted.desc())
+
+    return render_template("posts.html",posts=posts,our_users=our_users,users=users)
+
+@app.route('/all_users',methods=["GET"]) 
+def all_users():
+    users = Users.query.filter()
+    return render_template("all_users.html",users=users)
+
+    
+
+@app.route('/following/<username>',methods=["GET"]) 
+def following(username):
+    user = Users.query.filter_by(username=username).first()
+    users = user.followed
+    return render_template("all_users.html",users=users)
+
+    
+
+@app.route('/followers/<username>',methods=["GET"]) 
+def followers(username):
+    user = Users.query.filter_by(username=username).first()
+    users = user.followers
+    return render_template("all_users.html",users=users)
+
+    
+
+
+
 
 
 
@@ -575,15 +614,29 @@ class Posts(db.Model):
       id = db.Column(db.Integer,primary_key=True)
       title = db.Column(db.String(255))
       content = db.Column(db.Text)
+     
       #author=db.Column(db.String(255))
       date_posted=db.Column(db.DateTime() ,default =datetime.utcnow)
       img_url = db.Column(db.String(2083))
       slug= db.Column(db.String(255))
       #Foreign Key to Link Users (refer to primary)
       poster_id = db.Column(db.Integer,db.ForeignKey("users.id"))
+      archived_int = db.Column(db.Integer , default=0 )
 
 
+      likes = db.relationship('LikePost', backref='post', lazy='dynamic')
 
+      def archive_post(self, post):
+        if not self.has_archived_post(post):
+            post.archived_int= 1
+            
+      def unarchive_post(self, post):
+        if self.has_archived_post(post):
+            post.archived_int = 0
+           
+
+      def has_archived_post(self, post):
+        return post.archived_int
 
 # Create followers 
 followers = db.Table('followers',
@@ -608,7 +661,11 @@ followers = db.Table('followers',
 
 
 
-
+class LikePost(db.Model):
+    __tablename__ = 'post_like'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
 
 
 
@@ -641,7 +698,7 @@ class Users(db.Model,UserMixin):
         if self.is_following(user):
             self.followed.remove(user)
     def is_following(self,user):
-        return self.followed.filter(followers.c.followed_id == user.id).count()>0
+            return self.followed.filter(followers.c.followed_id == user.id).count()>0
 
     def followed_posts(self):
         followed= Posts.query.join(
@@ -652,6 +709,28 @@ class Users(db.Model,UserMixin):
         return followed.union(own).order_by(Posts.date_posted.desc())
 
 
+
+
+    #like relationship
+    liked = db.relationship(
+        'LikePost',
+        foreign_keys='LikePost.user_id',
+        backref='user', lazy='dynamic')
+
+
+    def like_post(self, post):
+        if not self.has_liked_post(post):
+            like = LikePost(user_id=self.id, post_id=post.id)
+            db.session.add(like)
+    def unlike_post(self, post):
+        if self.has_liked_post(post):
+            LikePost.query.filter_by(
+                user_id=self.id,
+                post_id=post.id).delete()
+    def has_liked_post(self, post):
+        return LikePost.query.filter(
+            LikePost.user_id == self.id,
+            LikePost.post_id == post.id).count() > 0
     @property
     def password(self):
         raise AttributeError('password is not readable attribute')
@@ -665,3 +744,31 @@ class Users(db.Model,UserMixin):
     #create a String 
     def __repr__(self):
         return '<Name %r>' % self.name 
+
+
+
+@app.route('/like/<int:post_id>/<action>')
+@login_required
+def like_action(post_id, action):
+    post = Posts.query.filter_by(id=post_id).first_or_404()
+    if action == 'like':
+        current_user.like_post(post)
+        db.session.commit()
+    if action == 'unlike':
+        current_user.unlike_post(post)
+        db.session.commit()
+    return redirect(request.referrer)
+
+
+@app.route('/archived/<int:post_id>/<action>')
+@login_required
+def archive_action(post_id, action):
+    post = Posts.query.filter_by(id=post_id).first_or_404()
+    if action == 'archive':
+        post.archive_post(post)
+        db.session.commit()
+    if action == 'unarchive':
+        post.unarchive_post(post)
+        db.session.commit()
+    return redirect(request.referrer)
+

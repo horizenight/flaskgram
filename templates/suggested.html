@@ -1,0 +1,138 @@
+<div class="col-4">
+  {% if current_user.is_authenticated %}
+  <div class="d-flex flex-row align-items-center">
+    <div>
+      <a href="{{ url_for('user', username=current_user.username) }}" class="link-menu">
+        <div
+          class="rounded-circle overflow-hidden d-flex justify-content-center align-items-center border sidenav-profile-photo">
+          {%if current_user.profile_pic%}
+          <img src="{{url_for('static',filename='images/'+current_user.profile_pic)}}" alt=""
+            style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+          {%else%}
+          <img src="{{url_for('static',filename='images/profile.jpg')}}" alt=""
+            style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+          {%endif%}
+        </div>
+      </a>
+    </div>
+    <div class="profile-info ml-3">
+      <span class="profile-info-username">{{current_user.username}}</span>
+      <span class="profile-info-name">{{current_user.name}}</span>
+    </div>
+  </div>
+
+  {%else%}
+
+
+  {%endif%}
+
+
+
+  
+
+  {%if our_users %}
+  <div class="mt-4">
+
+    <div class="d-flex flex-row justify-content-between">
+      
+      <small class="text-muted font-weight-normal">Suggestions For You</small>
+
+      <a href="{{url_for('all_users')}}">
+
+        <small>See All</small>
+
+      </a>
+    </div>
+
+    <div>
+   
+      {%for our_user in our_users %}
+
+      <div class="d-flex flex-row justify-content-between align-items-center mt-3 mb-3">
+        <div class="d-flex flex-row align-items-center">
+          <div>
+            <a href="{{ url_for('user', username=our_user.username) }}" class="link-menu">
+              <div
+                class="rounded-circle overflow-hidden d-flex justify-content-center align-items-center border sugest-profile-photo">
+                {%if our_user.profile_pic%}
+                <img src="{{url_for('static',filename='images/'+our_user.profile_pic)}}" alt=""
+                  style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+                {%else%}
+                <img src="{{url_for('static',filename='images/profile.jpg')}}" alt=""
+                  style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+                {%endif%}
+              </div>
+            </a>
+          </div>
+          <strong class="ml-3 sugest-username">{{our_user.username}}</strong>
+        </div>
+        {% if current_user.is_authenticated and current_user.is_following(our_user) %}
+        <form action="{{ url_for('unfollow', username=our_user.username) }}" method="post">
+          {{ form.hidden_tag() }}
+          <p>
+            {{ form.submit(value='Unfollow', class="btn btn-outline-dark btn-sm ") }}
+          </p>
+        </form>
+        {% else %}
+        <form action="{{ url_for('follow', username=our_user.username) }}" method="post">
+          {{ form.hidden_tag() }}
+          <p>
+            {{ form.submit(value='Follow', class="btn btn-outline-dark btn-sm ") }}
+          </p>
+        </form>
+        {% endif %}
+      </div>
+      {%endfor%}
+    </div>
+      {%else%}
+
+
+
+
+
+      <div>
+      {%for our_user in users %}
+
+      <div class="d-flex flex-row justify-content-between align-items-center mt-3 mb-3">
+        <div class="d-flex flex-row align-items-center">
+          <div>
+            <a href="{{ url_for('user', username=our_user.username) }}" class="link-menu">
+              <div
+                class="rounded-circle overflow-hidden d-flex justify-content-center align-items-center border sugest-profile-photo">
+                {%if our_user.profile_pic%}
+                <img src="{{url_for('static',filename='images/'+our_user.profile_pic)}}" alt=""
+                  style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+                {%else%}
+                <img src="{{url_for('static',filename='images/profile.jpg')}}" alt=""
+                  style="transform: scale(1.5); width: 100%; position: absolute; left: 0;">
+                {%endif%}
+              </div>
+            </a>
+          </div>
+          <strong class="ml-3 sugest-username">{{our_user.username}}</strong>
+        </div>
+        {% if current_user.is_authenticated and current_user.is_following(our_user) %}
+        <form action="{{ url_for('unfollow', username=our_user.username) }}" method="post">
+          {{ form.hidden_tag() }}
+          <p>
+            {{ form.submit(value='Unfollow', class="btn btn-outline-dark btn-sm ") }}
+          </p>
+        </form>
+        {% else %}
+        <form action="{{ url_for('follow', username=our_user.username) }}" method="post">
+          {{ form.hidden_tag() }}
+          <p>
+            {{ form.submit(value='Follow', class="btn btn-outline-dark btn-sm ") }}
+          </p>
+        </form>
+        {% endif %}
+      </div>
+    
+      {%endfor%}
+    </div>
+  </div>
+      
+      {%endif%}
+   
+</div>
+

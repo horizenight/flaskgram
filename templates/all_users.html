@@ -1,34 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content%}
+   
 
-
-</br>
-<div class="d-flex flex-row align-items-center">
-    <h5>You searched for: <em>
-        {{searched}}
-    </em> </h2>
-
-<br />
-
-</div>
-
-{%if users or posts %}
-<div class="flex">
-
-
-
-<div class="col-6">
-
-
-{%if users%}
-<h3>Users : </h1>
-{%else%}
-
-    {%endif%}
- 
+<h1>Users : </h1>
 <hr class="hr" />
-
 
 {%for our_user in users %}
 
@@ -86,65 +62,7 @@
 {%endfor%}
 
 
-</div>
-
-   </div>
-
-{%if posts%}
-<h3>Posts:</h3>
-{%else%}
-
-    {%endif%}
-
-
-<div class="col-6">
-</div>
-
-    {%for post in posts %}
-
-    <div class="shadow-lg p-3  bg-body rounded">
-        <h2> <a href="{{url_for('post',id=post.id)}}">{{post.title}}</a> </h2>
-        By: 
-       
-            <a href="{{ url_for('user', username=post.poster.username)}}">{{post.poster.username}}</a>
-   
-    <br />
-
-        {{post.date_posted}} <br /> <br />
-        {{post.content|safe}} <br />
-        <br />
-
-
-        <a class="btn btn-outline-secondary btn-sm" href="{{url_for('post',id=post.id)}}">View Post</a>
-
-
-        <br />
-    </div>
-
-    {%endfor%}
 
 
 
-    {%else%}
-    Sorry , your Search term: <strong>
-        {{searched}}
-    </strong> was not found...
-
-
-    {%endif %}
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-    {%endblock%}
+{%endblock%}

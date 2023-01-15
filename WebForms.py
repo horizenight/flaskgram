@@ -14,7 +14,7 @@ class LoginForm(FlaskForm):
 
 #Create a SearchForm
 class SearchForm(FlaskForm):
-    searched = StringField("Searched" , validators=[DataRequired()])
+    searched = StringField("Searched" , validators=[DataRequired(),Length(min=1)])
     submit = SubmitField("Submit")
 
 
@@ -24,7 +24,7 @@ class SearchForm(FlaskForm):
 class PostForm(FlaskForm):
     title = StringField('Title',validators=[DataRequired()])
     # content = StringField('Content',validators=[DataRequired()],widget=TextArea())
-    content = CKEditorField('content',validators=[DataRequired()])
+    content = CKEditorField('Content',validators=[DataRequired()])
     author = StringField('Author')
     img_url = StringField('Image URL')
     slug = StringField('Slug',validators=[DataRequired()])
