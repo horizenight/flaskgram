@@ -46,16 +46,6 @@ class UserForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-#create a Form Class 
-# CSFIR tokens 
-class NamerForm(FlaskForm):
-    name = StringField("What's Your Name" , validators= [DataRequired()])
-    submit = SubmitField("Submit")
-# CSFIR tokens 
-class PasswordForm(FlaskForm):
-    email = StringField("What's Your Email" , validators= [DataRequired()])
-    password_hash = PasswordField("What's Your Password" , validators= [DataRequired()])
-    submit = SubmitField("Submit")
 
 
 class Followforms(FlaskForm):

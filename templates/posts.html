@@ -58,7 +58,7 @@
                                     <ul class="list-inline d-flex flex-row align-items-center m-0">
                                         <li class="list-inline-item">
 
-                                            {% if current_user.has_liked_post(post) %}
+                                            {% if current_user.is_authenticated and current_user.has_liked_post(post) %}
                                             <a href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">
                                                 <button class="btn p-0">
                                                     <svg width="1.6em" height="1.6em" viewBox="0 0 16 16"
