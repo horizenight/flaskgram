@@ -39,6 +39,11 @@ metadata = MetaData(naming_convention=convention)
 #create a Flask Instance 
 app = Flask(__name__)
 
+if __name__ == "__main__":
+    app.run(debug=False,host='0.0.0.0')
+
+
+
 ckeditor = CKEditor(app)
 
 #Add Database 
