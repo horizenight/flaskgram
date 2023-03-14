@@ -2,6 +2,7 @@
 A Instagram Blog application clone made using flask and sqlite database 
 
 
+![Screenshot 2023-03-14 154421](https://user-images.githubusercontent.com/76839614/224969055-5046a136-e2c3-4bcc-9012-cb9abe78e360.png)
 
 # Deployed Link Valid upto 15th april 2023 
 [FlaskGram](http://horizenight.pythonanywhere.com/posts)
